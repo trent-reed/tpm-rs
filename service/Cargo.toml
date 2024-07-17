@@ -1,8 +1,0 @@
-[package]
-name = "tpm2-rs-service"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-hex-literal = { workspace = true }
-tpm2-rs-base = { workspace = true }

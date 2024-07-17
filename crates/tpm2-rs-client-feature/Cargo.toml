@@ -1,0 +1,10 @@
+[package]
+name = "tpm2-rs-features-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tpm2-rs-base = { workspace = true }
+tpm2-rs-errors = { workspace = true }
+tpm2-rs-client = { workspace = true }
+tpm2-rs-marshal = { workspace = true }

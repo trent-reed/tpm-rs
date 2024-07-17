@@ -1,0 +1,10 @@
+[package]
+name = "tpm2-rs-unionify"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tpm2-rs-unionify-derive = { workspace = true }
+
+[dev-dependencies]
+trybuild = { workspace = true }

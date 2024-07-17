@@ -1,4 +1,5 @@
 /target
+/crates/target
 *.lock
 .vscode
 NVChip
