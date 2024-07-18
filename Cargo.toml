@@ -1,15 +1,15 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/tpm2-rs-base",
-    "crates/tpm2-rs-client",
-    "crates/tpm2-rs-errors",
-    "crates/tpm2-rs-client-feature",
-    "crates/tpm2-rs-marshal",
-    "crates/tpm2-rs-marshal-derive",
-    "crates/tpm2-rs-service",
-    "crates/tpm2-rs-unionify",
-    "crates/tpm2-rs-unionify-derive",
+    "tpm2-rs-base",
+    "tpm2-rs-client",
+    "tpm2-rs-errors",
+    "tpm2-rs-client-feature",
+    "tpm2-rs-marshal",
+    "tpm2-rs-marshal-derive",
+    "tpm2-rs-service",
+    "tpm2-rs-unionify",
+    "tpm2-rs-unionify-derive",
 ]
 
 [workspace.dependencies]
@@ -26,12 +26,12 @@ trybuild = { version = "1.0.89", features = ["diff"] }
 zerocopy = { version = "0.7.0", features = ["derive"] }
 
 # Common workspace crates
-tpm2-rs-base = { path = "crates/tpm2-rs-base" }
-tpm2-rs-client = { path = "crates/tpm2-rs-client" }
-tpm2-rs-errors = { path = "crates/tpm2-rs-errors" }
-tpm2-rs-features-client = { path = "crates/tpm2-rs-client-feature" }
-tpm2-rs-marshal = { path = "crates/tpm2-rs-marshal" }
-tpm2-rs-marshal-derive = { path = "crates/tpm2-rs-marshal-derive" }
-tpm2-rs-service = { path = "crates/tpm2-rs-service" }
-tpm2-rs-unionify = { path = "crates/tpm2-rs-unionify" }
-tpm2-rs-unionify-derive = { path = "crates/tpm2-rs-unionify-derive" }
+tpm2-rs-base = { path = "tpm2-rs-base" }
+tpm2-rs-client = { path = "tpm2-rs-client" }
+tpm2-rs-errors = { path = "tpm2-rs-errors" }
+tpm2-rs-features-client = { path = "tpm2-rs-client-feature" }
+tpm2-rs-marshal = { path = "tpm2-rs-marshal" }
+tpm2-rs-marshal-derive = { path = "tpm2-rs-marshal-derive" }
+tpm2-rs-service = { path = "tpm2-rs-service" }
+tpm2-rs-unionify = { path = "tpm2-rs-unionify" }
+tpm2-rs-unionify-derive = { path = "tpm2-rs-unionify-derive" }

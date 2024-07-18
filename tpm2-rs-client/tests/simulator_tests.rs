@@ -4,7 +4,7 @@
 /// command line.
 ///
 /// To run locally in the docker container:
-///  `cd crates/tpm2-rs-client && docker compose run simulator_tests``
+///  `cd tpm2-rs-client && docker compose run simulator_tests`
 ///
 /// These tests must be run with `--test-threads=1`, because they use a single TCP port.
 
