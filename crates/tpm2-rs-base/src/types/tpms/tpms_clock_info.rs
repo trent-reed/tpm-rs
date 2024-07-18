@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
 pub struct TpmsClockInfo {
     pub clock: u64,

@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Marshalable)]
 pub struct StartupCmd {
     pub startup_type: TPM2SU,

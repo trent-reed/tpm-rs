@@ -1,5 +1,4 @@
 use super::*;
-use tpm2_rs_errors::*;
 
 // Unfortunately, I didn't see a way to generate a function name easily, see
 // https://github.com/rust-lang/rust/issues/29599 for more details. So we just
@@ -34,7 +33,7 @@ macro_rules! impl_test_tpm2b_simple {
         assert!(s.try_marshal(&mut bigger_size_buf).is_ok());
 
         // too small should fail
-        let mut result: TpmResult<$T> =
+        let mut result: TssTspResult<$T> =
             <$T>::try_unmarshal(&mut UnmarshalBuf::new(&too_small_size_buf));
         assert!(result.is_err());
 
@@ -307,7 +306,7 @@ fn test_marshal_tpmt_public() {
     // Test invalid selector value.
     assert!(TPM2AlgID::SHA256.try_marshal(&mut buffer).is_ok());
     unmarsh = TpmtPublic::try_unmarshal(&mut UnmarshalBuf::new(&buffer));
-    assert_eq!(unmarsh.err(), Some(TPM_RC_SELECTOR.into()));
+    assert_eq!(unmarsh.err(), Some(TssTspError::new(TssErrorCode::Fail)));
 }
 
 #[test]

@@ -21,6 +21,7 @@ use super::*;
 use tpm2_rs_base::commands::*; // This file will end up using all commands.
 use tpm2_rs_base::TpmsAuthResponse;
 use tpm2_rs_base::TPM2ST;
+use tpm2_rs_errors::TpmError;
 
 // =============================================================================
 // CONSTANTS
@@ -117,11 +118,10 @@ impl<C: TpmConnection> TpmClient<C> {
         self.connection
             .transact(&cmd_buffer[..written], &mut resp_buffer)?;
 
-        use tpm2_rs_errors::{TssErrorCode, TssTcsError};
         let (resp_header, read) = read_response_header(&resp_buffer)?;
         let resp_size = resp_header.size as usize;
         if resp_size > resp_buffer.len() {
-            return Err(TssTcsError::new(TssErrorCode::OutOfMemory).into());
+            return Err(TssTspError::new(TssErrorCode::OutOfMemory).into());
         }
         let mut unmarsh = UnmarshalBuf::new(&resp_buffer[read..resp_size]);
         let resp_handles = Command::RespHandles::try_unmarshal(&mut unmarsh)?;
@@ -132,7 +132,7 @@ impl<C: TpmConnection> TpmClient<C> {
         read_response_sessions(&cmd_sessions, &mut unmarsh)?;
 
         if !unmarsh.is_empty() {
-            return Err(TssTcsError::new(TssErrorCode::TpmUnexpected).into());
+            return Err(TssTspError::new(TssErrorCode::TpmUnexpected).into());
         }
         Ok((resp, resp_handles))
     }

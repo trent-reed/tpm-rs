@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Tpm2bMaxNvBuffer {
     size: u16,

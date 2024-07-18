@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct TpmtSensitive {
     pub auth_value: Tpm2bAuth,
@@ -8,8 +7,9 @@ pub struct TpmtSensitive {
     pub sensitive: TpmuSensitiveComposite,
 }
 // Custom overload of Marshalable, because the selector for sensitive is {un}marshaled first.
+// TODO: We don't need this, we can make derive macro smarter.
 impl Marshalable for TpmtSensitive {
-    fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize> {
+    fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
         let mut written = 0;
         written += self
             .sensitive
@@ -21,7 +21,7 @@ impl Marshalable for TpmtSensitive {
         Ok(written)
     }
 
-    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
         let selector = u16::try_unmarshal(buffer)?;
         Ok(TpmtSensitive {
             auth_value: Tpm2bAuth::try_unmarshal(buffer)?,

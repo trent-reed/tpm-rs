@@ -7,23 +7,32 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// TODO: I highly suspect this can go away... But I need to keep refactoring.
 macro_rules! impl_try_marshalable_tpm2b_simple {
   ($T:ty, $F:ident) => {
       impl crate::types::Tpm2bSimple for $T {
           const MAX_BUFFER_SIZE: usize = size_of::<$T>() - size_of::<u16>();
 
+          // TODO: Used in Marshalable, but is this all really necessary?
+          //       Also used in client a little.
           fn get_size(&self) -> u16 {
               self.size
           }
 
+          // TODO: I have no idea what this function is for...
           fn get_buffer(&self) -> &[u8] {
               &self.$F[0..self.get_size() as usize]
           }
 
-          fn from_bytes(buffer: &[u8]) -> TpmResult<Self> {
+          // TODO: I have no idea what this function is for...
+          //       I assume it's to check bounds on buffers or something,
+          //       It's only used in tests and the tests don't make it clearer.
+          //       Maybe old code that used to be used in marshaling and can be
+          //       removed now?
+          fn from_bytes(buffer: &[u8]) -> TssTspResult<Self> {
               // Overflow check
               if buffer.len() > core::cmp::min(u16::MAX as usize, Self::MAX_BUFFER_SIZE) {
-                  return Err(TPM_RC_SIZE.into());
+                  return Err(TssTspError::new(TssErrorCode::InternalError));
               }
 
               let mut dest: Self = Self {
@@ -46,13 +55,14 @@ macro_rules! impl_try_marshalable_tpm2b_simple {
       }
 
       impl Marshalable for $T {
-          fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+          fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
             use crate::types::Tpm2bSimple;
               let got_size = u16::try_unmarshal(buffer)?;
               // Ensure the buffer is large enough to fullfill the size indicated
+              // TODO: Probably we need to clean up UnmarshalBuf.
               let sized_buffer = buffer.get(got_size as usize);
               if !sized_buffer.is_some() {
-                  return Err(TPM_RC_MEMORY.into());
+                  return Err(TssTspError::new(TssErrorCode::InternalError));
               }
 
               let mut dest: Self = Self {
@@ -62,20 +72,20 @@ macro_rules! impl_try_marshalable_tpm2b_simple {
 
               // Make sure the size indicated isn't too large for the types buffer
               if sized_buffer.unwrap().len() > dest.$F.len() {
-                  return Err(TPM_RC_MEMORY.into());
+                  return Err(TssTspError::new(TssErrorCode::InternalError));
               }
               dest.$F[..got_size.into()].copy_from_slice(&sized_buffer.unwrap());
 
               Ok(dest)
           }
 
-          fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize> {
+          fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
               use crate::types::Tpm2bSimple;
               let used = self.size.try_marshal(buffer)?;
               let (_, rest) = buffer.split_at_mut(used);
               let buffer_marsh = self.get_size() as usize;
               if buffer_marsh > (core::cmp::max(Self::MAX_BUFFER_SIZE, rest.len())) {
-                  return Err(TPM_RC_MEMORY.into());
+                  return Err(TssTspError::new(TssErrorCode::InternalError));
               }
               rest[..buffer_marsh].copy_from_slice(&self.$F[..buffer_marsh]);
               Ok(used + buffer_marsh)
@@ -90,13 +100,13 @@ macro_rules! impl_try_marshalable_tpm2b_struct {
       impl crate::types::Tpm2bStruct for $T {
           type StructType = $StructType;
 
-          fn from_struct(val: &Self::StructType) -> TpmResult<Self> {
+          fn from_struct(val: &Self::StructType) -> TssTspResult<Self> {
               let mut x = Self::default();
               x.size = val.try_marshal(&mut x.$F)? as u16;
               Ok(x)
           }
 
-          fn to_struct(&self) -> TpmResult<Self::StructType> {
+          fn to_struct(&self) -> TssTspResult<Self::StructType> {
               use crate::types::Tpm2bSimple;
               let mut buf = UnmarshalBuf::new(&self.$F[0..self.get_size() as usize]);
               Self::StructType::try_unmarshal(&mut buf)

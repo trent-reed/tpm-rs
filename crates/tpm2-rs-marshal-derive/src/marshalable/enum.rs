@@ -59,7 +59,7 @@ pub(super) fn expand_enum(input: &DeriveInput, data: &DataEnum) -> Result<TokenS
             unsafe { *<*const _>::from(self).cast::<Self::Selector>() }
         }
 
-        fn try_marshal_variant(&self, buffer: &mut [u8]) -> ::tpm2_rs_marshal::__private::TpmResult<usize> {
+        fn try_marshal_variant(&self, buffer: &mut [u8]) -> ::tpm2_rs_marshal::__private::TssTspResult<usize> {
             let mut written: usize = 0;
             match self {
               #( #marshal_arms, )*
@@ -67,24 +67,26 @@ pub(super) fn expand_enum(input: &DeriveInput, data: &DataEnum) -> Result<TokenS
             Ok(written)
         }
 
-        fn try_unmarshal_variant(selector: Self::Selector, buffer: &mut UnmarshalBuf) -> ::tpm2_rs_marshal::__private::TpmResult<Self> {
+        fn try_unmarshal_variant(selector: Self::Selector, buffer: &mut UnmarshalBuf) -> ::tpm2_rs_marshal::__private::TssTspResult<Self> {
             // Because of open_enum, we can't use a match clause here.
             // We might be able to be smart about this and codegen differently.
             Ok(#( #unmarshal_if_blocks else )* {
-              return Err(::tpm2_rs_marshal::__private::TPM_RC_SELECTOR.into());
+              return Err(::tpm2_rs_marshal::__private::TssTspError::new(
+                ::tpm2_rs_marshal::__private::TssErrorCode::Fail
+              ));
             })
         }
     }
 
     impl ::tpm2_rs_marshal::Marshalable for #ident {
-      fn try_marshal(&self, buffer: &mut [u8]) -> ::tpm2_rs_marshal::__private::TpmResult<usize> {
+      fn try_marshal(&self, buffer: &mut [u8]) -> ::tpm2_rs_marshal::__private::TssTspResult<usize> {
         let mut written: usize = 0;
         written += self.discriminant().try_marshal(&mut buffer[written..])?;
         written += self.try_marshal_variant(&mut buffer[written..])?;
         Ok(written)
       }
 
-      fn try_unmarshal(buffer: &mut UnmarshalBuf) -> ::tpm2_rs_marshal::__private::TpmResult<Self> {
+      fn try_unmarshal(buffer: &mut UnmarshalBuf) -> ::tpm2_rs_marshal::__private::TssTspResult<Self> {
         let selector = <Self as ::tpm2_rs_marshal::MarshalableEnum>::Selector::try_unmarshal(buffer)?;
         Self::try_unmarshal_variant(selector, buffer)
       }

@@ -8,7 +8,7 @@ macro_rules! impl_test_scalar {
         let same_size_buffer: [u8; SIZE_OF_TYPE] = [$I; SIZE_OF_TYPE];
         let larger_buffer: [u8; SIZE_OF_TYPE + 4] = [$I; SIZE_OF_TYPE + 4];
 
-        let mut res: TpmResult<$T> =
+        let mut res: TssTspResult<$T> =
             <$T>::try_unmarshal(&mut UnmarshalBuf::new(&too_small_buffer));
         assert!(res.is_err());
 

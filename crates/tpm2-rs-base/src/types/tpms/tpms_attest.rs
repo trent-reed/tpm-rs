@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq)]
 pub struct TpmsAttest {
     pub magic: TPM2Generated,
@@ -12,8 +11,9 @@ pub struct TpmsAttest {
 }
 
 // Custom overload of Marshalable, because the selector for attested is {un}marshaled separate from the field.
+// TODO: We definitely don't need these. We can make the derive macro smarter.
 impl Marshalable for TpmsAttest {
-    fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize> {
+    fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
         let mut written = 0;
         written += self.magic.try_marshal(&mut buffer[written..])?;
         written += self
@@ -28,7 +28,7 @@ impl Marshalable for TpmsAttest {
         Ok(written)
     }
 
-    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
         let magic = TPM2Generated::try_unmarshal(buffer)?;
         let selector = u16::try_unmarshal(buffer)?;
         Ok(TpmsAttest {

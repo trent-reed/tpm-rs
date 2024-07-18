@@ -54,7 +54,10 @@ impl TpmCommand for HugeFakeCommand {
 fn test_command_too_large() {
     let mut client = TpmClient::new(StubTpmConnection::default());
     let too_large = HugeFakeCommand([0; CMD_BUFFER_SIZE]);
-    assert_eq!(client.run_command(&too_large), Err(TPM_RC_MEMORY.into()));
+    assert_eq!(
+        client.run_command(&too_large),
+        Err(TssTspError::new(TssErrorCode::InternalError).into())
+    );
 }
 
 #[derive(Marshalable)]
@@ -135,9 +138,10 @@ fn test_bad_response_size() {
         Ok(())
     });
     let cmd = TestCommand(2);
+    // TODO: Unsure of my error code selection here.
     assert_eq!(
-        client.run_command(&cmd),
-        Err(TssTcsError::new(TssErrorCode::OutOfMemory).into())
+      client.run_command(&cmd),
+      Err(TssTspError::new(TssErrorCode::OutOfMemory).into())
     );
 }
 
@@ -192,7 +196,11 @@ impl TpmCommand for TestHandlesCommand {
 fn test_response_missing_handles() {
     let cmd = TestHandlesCommand();
     let mut client = TpmClient::new(FakeTpmConnection::default());
-    assert_eq!(client.run_command(&cmd), Err(TPM_RC_MEMORY.into()));
+    // TODO: Unsure of my error code selection here.
+    assert_eq!(
+      client.run_command(&cmd),
+      Err(TssTspError::new(TssErrorCode::InternalError).into())
+    );
 }
 
 #[test]
@@ -206,9 +214,10 @@ fn test_response_missing_sessions() {
     let mut session = PasswordSession::default();
     sessions.push(&mut session);
     let mut client = TpmClient::new(fake_connection);
+    // TODO: Unsure of my error code selection here.
     assert_eq!(
-        client.run_command_with_handles(&cmd, TPM2Handle::RSPW, sessions),
-        Err(TPM_RC_MEMORY.into())
+      client.run_command_with_handles(&cmd, TPM2Handle::RSPW, sessions),
+      Err(TssTspError::new(TssErrorCode::InternalError).into())
     );
 }
 

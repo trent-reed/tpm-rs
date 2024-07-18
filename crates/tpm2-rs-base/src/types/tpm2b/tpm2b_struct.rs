@@ -7,10 +7,10 @@ pub trait Tpm2bStruct: Tpm2bSimple {
   type StructType: Marshalable;
 
   /// Marshals the value into the 2b holder.
-  fn from_struct(val: &Self::StructType) -> TpmResult<Self>
+  fn from_struct(val: &Self::StructType) -> TssTspResult<Self>
   where
       Self: Sized;
 
   /// Extracts the struct value from the 2b holder.
-  fn to_struct(&self) -> TpmResult<Self::StructType>;
+  fn to_struct(&self) -> TssTspResult<Self::StructType>;
 }

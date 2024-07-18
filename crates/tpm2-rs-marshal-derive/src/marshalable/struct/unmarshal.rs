@@ -11,7 +11,9 @@ fn expand_struct_unmarshal_assignments_length(ident: &Ident, field: &Field, leng
   let array_length = &array_type.len;
   Ok(quote_spanned!(field.span()=>
     if #length as usize > #array_length {
-      return Err(::tpm2_rs_marshal::__private::TPM_RC_SIZE.into());
+      return Err(::tpm2_rs_marshal::__private::TssTspError::new(
+        ::tpm2_rs_marshal::__private::TssErrorCode::Fail
+      ));
     }
     let mut #ident = [#array_element::default(); #array_length];
     for entry in #ident.iter_mut().take(#length as usize) {

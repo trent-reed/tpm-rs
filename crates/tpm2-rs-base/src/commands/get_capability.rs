@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Marshalable)]
 pub struct GetCapabilityCmd {
     pub capability: TPM2Cap,
@@ -14,7 +13,6 @@ impl TpmCommand for GetCapabilityCmd {
     type RespHandles = ();
 }
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
 pub struct GetCapabilityResp {
     pub more_data: TpmiYesNo,

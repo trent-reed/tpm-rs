@@ -45,7 +45,7 @@ pub enum TssErrorCode {
 }
 
 // -----------------------------------------------------------------------------
-#[derive(Copy,Clone,Debug,Eq,PartialEq,Hash)]
+#[derive(Copy,Clone,Eq,PartialEq,Hash)]
 #[repr(transparent)]
 pub struct TssError(NonZeroU32);
 
@@ -97,5 +97,12 @@ impl<T: Into<TpmError>> From<T> for TssError {
     // Into the TpmError -> Into the NonZeroU32.
     // TODO: See if we can just officially say a TpmError is a TssError.
     Self(orig.into().into())
+  }
+}
+
+// TODO: Need a better implementation of this.
+impl core::fmt::Debug for TssError {
+  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+    write!(f, "Layer: {}, Code: {}", self.layer(), self.code())
   }
 }

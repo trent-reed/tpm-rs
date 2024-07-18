@@ -7,7 +7,7 @@ pub trait Tpm2bSimple {
   const MAX_BUFFER_SIZE: usize;
   fn get_size(&self) -> u16;
   fn get_buffer(&self) -> &[u8];
-  fn from_bytes(buffer: &[u8]) -> TpmResult<Self>
+  fn from_bytes(buffer: &[u8]) -> TssTspResult<Self>
   where
       Self: Sized;
 }

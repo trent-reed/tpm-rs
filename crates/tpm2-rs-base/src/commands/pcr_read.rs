@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
 pub struct PcrReadCmd {
     pcr_selection_in: TpmlPcrSelection,
@@ -12,7 +11,6 @@ impl TpmCommand for PcrReadCmd {
     type RespHandles = ();
 }
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
 pub struct PcrReadResp {
     pcr_update_counter: u32,

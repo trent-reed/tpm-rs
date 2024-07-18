@@ -94,8 +94,7 @@ fn tagged_enum_to_union(tagged_enum: ItemEnum, union_name: &Ident) -> Result<Tok
     // about anything of the generated code
     let untagged_union = quote!(
         #[allow(warnings, unused)]
-        #[repr(C)]
-        union #union_name {
+                union #union_name {
             #union_fields
         }
     );

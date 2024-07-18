@@ -3,6 +3,7 @@
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// TODO: See if we really need this macro.
 macro_rules! impl_tpml {
   ($T:ty,  $ListField:ident, $ListType:ty, $ListCapacity:ident) => {
       // Implement Default for the type. This cannot usually be derived, because $ListCapacity is too large.
@@ -16,10 +17,9 @@ macro_rules! impl_tpml {
       }
 
       impl $T {
-          pub fn new(elements: &[$ListType]) -> TpmResult<$T> {
+          pub fn new(elements: &[$ListType]) -> TssTspResult<$T> {
               if elements.len() > $ListCapacity as usize {
-                  // TODO: Should this return error in server or client value space?
-                  return Err(TPM_RC_SIZE.into());
+                  return Err(TssTspError::new(TssErrorCode::InternalError));
               }
               let mut x = Self::default();
               x.count = elements.len() as u32;
@@ -27,10 +27,9 @@ macro_rules! impl_tpml {
               Ok(x)
           }
 
-          pub fn add(&mut self, element: &$ListType) -> TpmResult<()> {
+          pub fn add(&mut self, element: &$ListType) -> TssTspResult<()> {
               if self.count() >= self.$ListField.len() {
-                  // TODO: Should this return error in server or client value space?
-                  return Err(TPM_RC_SIZE.into());
+                return Err(TssTspError::new(TssErrorCode::InternalError));
               }
               self.$ListField[self.count()] = *element;
               self.count += 1;

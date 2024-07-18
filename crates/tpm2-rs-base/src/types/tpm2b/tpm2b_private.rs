@@ -1,7 +1,6 @@
 use super::*;
 
 // TODO: Unsure how useful this is if it's a private struct.
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 struct _PRIVATE {
     integrity_outer: Tpm2bDigest,
@@ -9,7 +8,6 @@ struct _PRIVATE {
     sensitive: Tpm2bSensitive,
 }
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct Tpm2bPrivate {
     size: u16,

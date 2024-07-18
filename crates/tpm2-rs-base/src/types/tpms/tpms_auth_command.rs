@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, Default, PartialEq, Debug, Marshalable)]
 pub struct TpmsAuthCommand {
     pub session_handle: TpmiShAuthSession,

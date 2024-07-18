@@ -6,13 +6,12 @@ use super::*;
 #[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
 pub struct TpmiRhNvIndex(u32);
 impl TryFrom<u32> for TpmiRhNvIndex {
-    // TODO: This is probably wrong, because it's not an error from the TPM.
-    type Error = TpmError;
+    type Error = TssTspError;
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         if TpmHc::is_nv_index(value) {
             Ok(TpmiRhNvIndex(value))
         } else {
-            Err(TPM_RC_VALUE.into())
+            Err(TssTspError::new(TssErrorCode::BadParameter))
         }
     }
 }

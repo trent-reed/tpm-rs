@@ -21,38 +21,38 @@ use super::*;
 // entries that should be marshaled. See TpmlPcrSelection for an example.
 pub trait Marshalable: Sized {
   // Unmarshals self from the prefix of `buffer`. Returns the unmarshalled self and number of bytes used.
-  fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self>;
+  fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self>;
 
   // Marshals self into the prefix of `buffer`. Returns the number of bytes used.
-  fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize>;
+  fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize>;
 }
 
 impl Marshalable for () {
-  fn try_marshal(&self, _buffer: &mut [u8]) -> TpmResult<usize> {
+  fn try_marshal(&self, _buffer: &mut [u8]) -> TssTspResult<usize> {
       Ok(0)
   }
-  fn try_unmarshal(_buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+  fn try_unmarshal(_buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
       Ok(())
   }
 }
 
 impl<const M: usize> Marshalable for [u8; M] {
-  fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+  fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
       if let Some(mine) = buffer.get(M) {
           let mut x = [0u8; M];
           x.copy_from_slice(mine);
           Ok(x)
       } else {
-          Err(TPM_RC_MEMORY.into())
+        return Err(TssTspError::new(TssErrorCode::InternalError));
       }
   }
 
-  fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize> {
+  fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
       if buffer.len() >= self.len() {
           buffer[..self.len()].copy_from_slice(self);
           Ok(self.len())
       } else {
-          Err(TPM_RC_MEMORY.into())
+        return Err(TssTspError::new(TssErrorCode::InternalError));
       }
   }
 }
@@ -62,14 +62,14 @@ impl<const M: usize> Marshalable for [u8; M] {
 macro_rules! impl_be_prim_marshalable {
   ($T:ty) => {
       impl Marshalable for $T {
-          fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+          fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
               type BufferType = [u8; size_of::<$T>()];
               let x = BufferType::try_unmarshal(buffer)?;
               // let x = <[u8; size_of::<$T>()]>::try_unmarshal(buffer)?;
               Ok(Self::from_be_bytes(x))
           }
 
-          fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize> {
+          fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
               self.to_be_bytes().try_marshal(buffer)
           }
       }

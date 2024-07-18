@@ -6,8 +6,7 @@ use super::*;
 #[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
 pub struct TpmiShAuthSession(u32);
 impl TryFrom<u32> for TpmiShAuthSession {
-  // TODO: This is probably wrong, because it's not an error from the TPM.
-    type Error = TpmError;
+    type Error = TssTspError;
     fn try_from(value: u32) -> Result<Self, Self::Error> {
         if TpmHc::is_hmac_session(value)
             || TpmHc::is_policy_session(value)
@@ -15,7 +14,7 @@ impl TryFrom<u32> for TpmiShAuthSession {
         {
             Ok(TpmiShAuthSession(value))
         } else {
-            Err(TPM_RC_VALUE.into())
+            Err(TssTspError::new(TssErrorCode::BadParameter))
         }
     }
 }

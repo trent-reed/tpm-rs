@@ -4,8 +4,7 @@ use super::*;
 // See definition in Part 2: Structures, section 6.3.
 #[open_enum]
 #[repr(u16)]
-#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
-#[derive(Copy, Clone, Default, Marshalable)]
+#[derive(Copy, Clone, Debug, Default, Marshalable)]
 pub enum TPM2AlgID {
     RSA = 0x0001,
     TDES = 0x0003,

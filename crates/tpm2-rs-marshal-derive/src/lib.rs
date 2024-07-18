@@ -30,7 +30,6 @@ mod marshalable;
 /// for a struct by calling try_{un}marshal on each field in the struct. This
 /// requires that the type of each field in the struct meets one of the
 /// following conditions:
-///  - The type implements zerocopy::AsBytes and zerocopy::FromBytes
 ///  - The type is an array, the array entry type also meets these Marshal
 ///    conditions, and the array field is tagged with the #[marshal(length = $length_field)]
 ///    attribute, where $length_field is a field in the struct appearing before

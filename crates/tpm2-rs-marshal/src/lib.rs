@@ -26,9 +26,9 @@ extern crate self as tpm2_rs_marshal;
 // -----------------------------------------------------------------------------
 #[doc(hidden)]
 pub mod __private {
-  pub use tpm2_rs_errors::TpmResult;
-  pub use tpm2_rs_errors::TPM_RC_SIZE;
-  pub use tpm2_rs_errors::TPM_RC_SELECTOR;
+  pub use tpm2_rs_errors::TssErrorCode;
+  pub use tpm2_rs_errors::TssTspError;
+  pub use tpm2_rs_errors::TssTspResult;
 }
 
 // -----------------------------------------------------------------------------

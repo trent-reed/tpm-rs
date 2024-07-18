@@ -12,7 +12,6 @@ pub enum PublicParmsAndId {
     Ecc(TpmsEccParms, TpmsEccPoint) = TPM2AlgID::ECC.0,
 }
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub struct TpmtPublic {
     pub name_alg: TpmiAlgHash,
@@ -22,8 +21,9 @@ pub struct TpmtPublic {
     pub parms_and_id: PublicParmsAndId,
 }
 // Custom overload of Marshalable, because the selector for parms_and_id is {un}marshaled first.
+// TODO: We definitely don't need these. We can make the derive macro smarter.
 impl Marshalable for TpmtPublic {
-    fn try_marshal(&self, buffer: &mut [u8]) -> TpmResult<usize> {
+    fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
         let mut written = 0;
         written += self
             .parms_and_id
@@ -37,7 +37,7 @@ impl Marshalable for TpmtPublic {
             .try_marshal_variant(&mut buffer[written..])?;
         Ok(written)
     }
-    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TpmResult<Self> {
+    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
         let selector = u16::try_unmarshal(buffer)?;
         Ok(TpmtPublic {
             name_alg: TpmiAlgHash::try_unmarshal(buffer)?,

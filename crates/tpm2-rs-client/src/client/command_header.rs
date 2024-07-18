@@ -2,7 +2,6 @@ use super::*;
 use tpm2_rs_base::TpmiStCommandTag;
 use tpm2_rs_base::TPM2CC;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Marshalable)]
 pub struct CmdHeader {
     pub tag: TpmiStCommandTag,

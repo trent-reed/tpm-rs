@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
 pub struct TpmsPcrSelection {
     pub hash: TpmiAlgHash,

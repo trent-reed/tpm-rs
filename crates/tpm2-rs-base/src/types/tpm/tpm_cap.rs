@@ -4,8 +4,7 @@ use super::*;
 // See definition in Part 2: Structures, section 6.12
 #[open_enum]
 #[repr(u32)]
-#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
-#[derive(Copy, Clone, Default, Marshalable)]
+#[derive(Copy, Clone, Debug, Default, Marshalable)]
 pub enum TPM2Cap {
     Algs = 0x00000000,
     Handles = 0x00000001,

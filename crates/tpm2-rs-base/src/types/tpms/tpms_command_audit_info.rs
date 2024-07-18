@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Marshalable)]
 pub struct TpmsCommandAuditInfo {
     pub audit_counter: u64,

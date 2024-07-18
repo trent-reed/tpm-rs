@@ -1,6 +1,5 @@
 use super::*;
 
-#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Default, Debug, Marshalable)]
 pub struct TpmsTaggedPcrSelect {
     tag: TPM2PTPCR,

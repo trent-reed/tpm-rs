@@ -10,7 +10,9 @@ fn expand_struct_marshal_expr_field_length(expr: &Expr, field: &Field, length: &
   let array_length = &array_type.len;
   Ok(quote_spanned!(field.span()=>
     if self.#length as usize > #array_length {
-      return Err(::tpm2_rs_marshal::__private::TPM_RC_SIZE.into());
+      return Err(::tpm2_rs_marshal::__private::TssTspError::new(
+        ::tpm2_rs_marshal::__private::TssErrorCode::Fail
+      ));
     }
     for entry in #expr.iter().take(self.#length as usize) {
       written += entry.try_marshal(&mut buffer[written..])?
