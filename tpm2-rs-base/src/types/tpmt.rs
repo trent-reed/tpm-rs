@@ -6,6 +6,16 @@
 use super::*;
 
 // =============================================================================
+// MODULES
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+mod public;
+pub use public::*;
+mod sensitive;
+pub use sensitive::*;
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
@@ -72,53 +82,6 @@ pub enum TpmtKeyedHashScheme {
     Null(TpmsEmpty) = TPM2AlgID::Null.0,
 }
 
-// TODO: This type is not defined by the standard.
-// We should probably have a special naming convention.
-// TODO: We probably should not have these unnamed structs.
-#[repr(C, u16)]
-#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
-pub enum PublicParmsAndId {
-    KeyedHash(TpmsKeyedHashParms, Tpm2bDigest) = TPM2AlgID::KeyedHash.0,
-    Sym(TpmsSymCipherParms, Tpm2bDigest) = TPM2AlgID::SymCipher.0,
-    Rsa(TpmsRsaParms, Tpm2bPublicKeyRsa) = TPM2AlgID::RSA.0,
-    Ecc(TpmsEccParms, TpmsEccPoint) = TPM2AlgID::ECC.0,
-}
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub struct TpmtPublic {
-    pub name_alg: TpmiAlgHash,
-    pub object_attributes: TpmaObject,
-    pub auth_policy: Tpm2bDigest,
-    // #[marshal(root_discriminant)]
-    pub parms_and_id: PublicParmsAndId,
-}
-// Custom overload of Marshalable, because the selector for parms_and_id is {un}marshaled first.
-// TODO: We definitely don't need these. We can make the derive macro smarter.
-impl Marshalable for TpmtPublic {
-    fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
-        let mut written = 0;
-        written += self
-            .parms_and_id
-            .discriminant()
-            .try_marshal(&mut buffer[written..])?;
-        written += self.name_alg.try_marshal(&mut buffer[written..])?;
-        written += self.object_attributes.try_marshal(&mut buffer[written..])?;
-        written += self.auth_policy.try_marshal(&mut buffer[written..])?;
-        written += self
-            .parms_and_id
-            .try_marshal_variant(&mut buffer[written..])?;
-        Ok(written)
-    }
-    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
-        let selector = u16::try_unmarshal(buffer)?;
-        Ok(TpmtPublic {
-            name_alg: TpmiAlgHash::try_unmarshal(buffer)?,
-            object_attributes: TpmaObject::try_unmarshal(buffer)?,
-            auth_policy: Tpm2bDigest::try_unmarshal(buffer)?,
-            parms_and_id: PublicParmsAndId::try_unmarshal_variant(selector, buffer)?,
-        })
-    }
-}
-
 #[repr(C, u16)]
 #[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
 pub enum TpmtRsaScheme {
@@ -131,38 +94,6 @@ pub enum TpmtRsaScheme {
     Rsaes(TpmsEncSchemeRsaes) = TPM2AlgID::RSAES.0,
     Oaep(TpmsEncSchemeOaep) = TPM2AlgID::OAEP.0,
     Null(TpmsEmpty) = TPM2AlgID::Null.0,
-}
-
-#[derive(Clone, Copy, PartialEq, Debug)]
-pub struct TpmtSensitive {
-    pub auth_value: Tpm2bAuth,
-    pub seed_value: Tpm2bDigest,
-    pub sensitive: TpmuSensitiveComposite,
-}
-// Custom overload of Marshalable, because the selector for sensitive is {un}marshaled first.
-// TODO: We don't need this, we can make derive macro smarter.
-impl Marshalable for TpmtSensitive {
-    fn try_marshal(&self, buffer: &mut [u8]) -> TssTspResult<usize> {
-        let mut written = 0;
-        written += self
-            .sensitive
-            .discriminant()
-            .try_marshal(&mut buffer[written..])?;
-        written += self.auth_value.try_marshal(&mut buffer[written..])?;
-        written += self.seed_value.try_marshal(&mut buffer[written..])?;
-        written += self.sensitive.try_marshal_variant(&mut buffer[written..])?;
-        Ok(written)
-    }
-
-    fn try_unmarshal(buffer: &mut UnmarshalBuf) -> TssTspResult<Self> {
-        let selector = u16::try_unmarshal(buffer)?;
-        Ok(TpmtSensitive {
-            auth_value: Tpm2bAuth::try_unmarshal(buffer)?,
-            seed_value: Tpm2bDigest::try_unmarshal(buffer)?,
-            // TODO: This is not great, it's us reaching into the guts of marshal.
-            sensitive: TpmuSensitiveComposite::try_unmarshal_variant(selector, buffer)?,
-        })
-    }
 }
 
 // TODO: I'd rather have helper structs.
