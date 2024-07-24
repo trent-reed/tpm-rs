@@ -1,4 +1,11 @@
 // =============================================================================
+// COMMON USES
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+use super::*;
+
+// =============================================================================
 // MACROS
 // =============================================================================
 
@@ -48,34 +55,85 @@ macro_rules! impl_tpml {
 }
 
 // =============================================================================
-// MODULES
+// TYPES
 // =============================================================================
 
-// -----------------------------------------------------------------------------
-mod tpml_alg_property;
-pub use tpml_alg_property::*;
-mod tpml_cc;
-pub use tpml_cc::*;
-mod tpml_cca;
-pub use tpml_cca::*;
-mod tpml_digest;
-pub use tpml_digest::*;
-mod tpml_ecc_curve;
-pub use tpml_ecc_curve::*;
-mod tpml_handle;
-pub use tpml_handle::*;
-mod tpml_pcr_selection;
-pub use tpml_pcr_selection::*;
-mod tpml_tagged_pcr_property;
-pub use tpml_tagged_pcr_property::*;
-mod tpml_tagged_policy;
-pub use tpml_tagged_policy::*;
-mod tpml_tagged_tpm_property;
-pub use tpml_tagged_tpm_property::*;
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlAlgProperty {
+    count: u32,
+    #[marshal(length=count)]
+    alg_properties: [TpmsAlgProperty; TPM2_MAX_CAP_ALGS],
+}
+impl_tpml! {TpmlAlgProperty, alg_properties, TpmsAlgProperty, TPM2_MAX_CAP_ALGS}
 
-// =============================================================================
-// COMMON USES
-// =============================================================================
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlCc {
+    count: u32,
+    #[marshal(length=count)]
+    command_codes: [TPM2CC; TPM2_MAX_CAP_CC],
+}
+impl_tpml! {TpmlCc, command_codes, TPM2CC, TPM2_MAX_CAP_CC}
 
-// -----------------------------------------------------------------------------
-use super::*;
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlCca {
+    count: u32,
+    #[marshal(length=count)]
+    command_attributes: [TpmaCc; TPM2_MAX_CAP_CC],
+}
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlDigest {
+    count: u32,
+    #[marshal(length=count)]
+    digests: [Tpm2bDigest; TPML_DIGEST_MAX_DIGESTS],
+}
+impl_tpml! {TpmlDigest, digests, Tpm2bDigest, TPML_DIGEST_MAX_DIGESTS}
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlEccCurve {
+    count: u32,
+    #[marshal(length=count)]
+    ecc_curves: [TPM2ECCCurve; TPM2_MAX_ECC_CURVES],
+}
+impl_tpml! {TpmlEccCurve, ecc_curves, TPM2ECCCurve, TPM2_MAX_ECC_CURVES}
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlHandle {
+    count: u32,
+    #[marshal(length=count)]
+    handle: [TPM2Handle; TPM2_MAX_CAP_HANDLES],
+}
+impl_tpml! {TpmlHandle, handle, TPM2Handle, TPM2_MAX_CAP_HANDLES}
+
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlPcrSelection {
+    count: u32,
+    #[marshal(length=count)]
+    pcr_selections: [TpmsPcrSelection; TPM2_NUM_PCR_BANKS as usize],
+}
+impl_tpml! {TpmlPcrSelection, pcr_selections, TpmsPcrSelection, TPM2_NUM_PCR_BANKS}
+
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlTaggedPcrProperty {
+    count: u32,
+    #[marshal(length=count)]
+    pcr_property: [TpmsTaggedPcrSelect; TPM2_MAX_PCR_PROPERTIES],
+}
+impl_tpml! {TpmlTaggedPcrProperty, pcr_property, TpmsTaggedPcrSelect, TPM2_MAX_PCR_PROPERTIES}
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlTaggedPolicy {
+    count: u32,
+    #[marshal(length=count)]
+    policies: [TpmsTaggedPolicy; TPM2_MAX_TAGGED_POLICIES],
+}
+
+#[derive(Clone, Copy, PartialEq, Debug, Marshalable)]
+pub struct TpmlTaggedTpmProperty {
+    count: u32,
+    #[marshal(length=count)]
+    tpm_property: [TpmsTaggedProperty; TPM2_MAX_TPM_PROPERTIES],
+}
+impl_tpml! {TpmlTaggedTpmProperty, tpm_property, TpmsTaggedProperty, TPM2_MAX_TPM_PROPERTIES}

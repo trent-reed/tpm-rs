@@ -1,50 +1,256 @@
 // =============================================================================
-// MODULES
-// =============================================================================
-
-// -----------------------------------------------------------------------------
-mod tpmi_aes_key_bits;
-pub use tpmi_aes_key_bits::*;
-mod tpmi_alg_asym_scheme;
-pub use tpmi_alg_asym_scheme::*;
-mod tpmi_alg_ecc_scheme;
-pub use tpmi_alg_ecc_scheme::*;
-mod tpmi_alg_hash;
-pub use tpmi_alg_hash::*;
-mod tpmi_alg_kdf;
-pub use tpmi_alg_kdf::*;
-mod tpmi_alg_keyedhash_scheme;
-pub use tpmi_alg_keyedhash_scheme::*;
-mod tpmi_alg_public;
-pub use tpmi_alg_public::*;
-mod tpmi_alg_rsa_scheme;
-pub use tpmi_alg_rsa_scheme::*;
-mod tpmi_alg_sym_mode;
-pub use tpmi_alg_sym_mode::*;
-mod tpmi_alg_sym_object;
-pub use tpmi_alg_sym_object::*;
-mod tpmi_camellia_key_bits;
-pub use tpmi_camellia_key_bits::*;
-mod tpmi_ecc_curve;
-pub use tpmi_ecc_curve::*;
-mod tpmi_rh_hv_index;
-pub use tpmi_rh_hv_index::*;
-mod tpmi_rsa_key_bits;
-pub use tpmi_rsa_key_bits::*;
-mod tpmi_sh_auth_session;
-pub use tpmi_sh_auth_session::*;
-mod tpmi_sm4_key_bits;
-pub use tpmi_sm4_key_bits::*;
-mod tpmi_st_attest;
-pub use tpmi_st_attest::*;
-mod tpmi_st_command_tag;
-pub use tpmi_st_command_tag::*;
-mod tpmi_yes_no;
-pub use tpmi_yes_no::*;
-
-// =============================================================================
 // COMMON USES
 // =============================================================================
 
 // -----------------------------------------------------------------------------
 use super::*;
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+/// The number of bits in an AES key.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiAesKeyBits(u16);
+
+/// TpmiAlgAsymScheme represents all the scheme types for any asymmetric algortihm (TPMI_ALG_ASYM_SCHEME).
+/// See definition in Part 2: Structures, section 11.2.3.4.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgAsymScheme{
+    SM2 = TPM2AlgID::SM2.0,
+    ECDH = TPM2AlgID::ECDH.0,
+    ECMQV = TPM2AlgID::ECMQV.0,
+    RSAPSS = TPM2AlgID::RSAPSS.0,
+    RSASSA = TPM2AlgID::RSASSA.0,
+    ECDSA = TPM2AlgID::ECDSA.0,
+    ECDAA = TPM2AlgID::ECDAA.0,
+    ECSchnorr = TPM2AlgID::ECSchnorr.0,
+    RSAES = TPM2AlgID::RSAES.0,
+    OAEP = TPM2AlgID::OAEP.0,
+}
+
+/// TpmiAlgEccScheme represents values that may appear in the scheme parameter of a TpmtEccScheme (TPMI_ALG_ECC_SCHEME).
+/// See definition in Part 2: Structures, section 11.2.5.4.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgEccScheme{
+    RSAPSS = TPM2AlgID::RSAPSS.0,
+    RSASSA = TPM2AlgID::RSASSA.0,
+    ECDSA = TPM2AlgID::ECDSA.0,
+    ECDAA = TPM2AlgID::ECDAA.0,
+    SM2 = TPM2AlgID::SM2.0,
+    ECSchnorr = TPM2AlgID::ECSchnorr.0,
+    ECDH = TPM2AlgID::ECDH.0,
+    ECMQV = TPM2AlgID::ECMQV.0,
+}
+
+/// TpmiAlgHash represents all of the hash algorithms (TPMI_ALG_HASH).
+/// See definition in Part 2: Structures, section 9.27.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+pub enum TpmiAlgHash {
+    SHA1 = TPM2AlgID::SHA1.0,
+    SHA256  = TPM2AlgID::SHA256.0,
+    SHA384   = TPM2AlgID::SHA384.0,
+    SHA512 = TPM2AlgID::SHA512.0,
+    SM3256 = TPM2AlgID::SM3256.0,
+    SHA3256 = TPM2AlgID::SHA3256.0,
+    SHA3384 = TPM2AlgID::SHA3384.0,
+    SHA3512 = TPM2AlgID::SHA3512.0,
+}
+
+/// TpmiAlgKdf represents all of key derivation functions (TPMI_ALG_KDF).
+/// See definition in Part 2: Structures, section 9.32.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+pub enum TpmiAlgKdf {
+    MGF1 = TPM2AlgID::MGF1.0,
+    KDF1SP80056A = TPM2AlgID::KDF1SP80056A.0,
+    KDF2 = TPM2AlgID::KDF2.0,
+    KDF1SP800108 = TPM2AlgID::KDF1SP800108.0,
+}
+
+/// TpmiAlgKeyedhashScheme represents values that may appear in a keyed_hash as the scheme parameter (TPMI_ALG_KEYEDHASH_SCHEME).
+/// See definition in Part 2: Structures, section 11.1.19.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgKeyedhashScheme{
+    HMAC = TPM2AlgID::HMAC.0,
+    XOR = TPM2AlgID::XOR.0,
+}
+
+/// TpmiAlgPublic represents all object types (TPMI_ALG_PUBLIC).
+/// See definition in Part 2: Structures, section 12.2.2.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgPublic{
+    RSA = TPM2AlgID::RSA.0,
+    KeyedHash = TPM2AlgID::KeyedHash.0,
+    ECC = TPM2AlgID::ECC.0,
+    SymCipher = TPM2AlgID::SymCipher.0,
+}
+
+/// TpmiAlgRsaScheme represents values that may appear in the scheme parameter of a TpmsRsaParms (TPMI_ALG_RSA_SCHEME).
+/// See definition in Part 2: Structures, section 11.2.4.1.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgRsaScheme{
+    RSAPSS = TPM2AlgID::RSAPSS.0,
+    RSASSA = TPM2AlgID::RSASSA.0,
+    ECDSA = TPM2AlgID::ECDSA.0,
+    ECDAA = TPM2AlgID::ECDAA.0,
+    SM2 = TPM2AlgID::SM2.0,
+    ECSchnorr = TPM2AlgID::ECSchnorr.0,
+    RSAES = TPM2AlgID::RSAES.0,
+    OAEP = TPM2AlgID::OAEP.0,
+}
+
+/// TpmiAlgSymMode represents all of block-cipher modes of operation (TPMI_ALG_SYM_MODE).
+/// See definition in Part 2: Structures, section 9.31.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgSymMode{
+    CMAC = TPM2AlgID::CMAC.0,
+    CTR = TPM2AlgID::CTR.0,
+    OFB = TPM2AlgID::OFB.0,
+    CBC = TPM2AlgID::CBC.0,
+    CFB = TPM2AlgID::CFB.0,
+    ECB = TPM2AlgID::ECB.0,
+}
+
+/// TpmiAlgSymObject represents all of the symmetric algorithms that may be used as a companion encryption algortihm for an asymmetric object (TPMI_ALG_SYM_OBJECT).
+/// See definition in Part 2: Structures, section 9.30.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+#[allow(clippy::upper_case_acronyms)]
+pub enum TpmiAlgSymObject{
+    TDES = TPM2AlgID::TDES.0,
+    AES = TPM2AlgID::AES.0,
+    SM4 = TPM2AlgID::SM4.0,
+    Camellia = TPM2AlgID::Camellia.0,
+}
+
+/// The number of bits in a Camellia key.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiCamelliaKeyBits(u16);
+
+/// TpmiEccCurve represents an implemented ECC curve (TPMI_ECC_SCHEME).
+/// See definition in Part 2: Structures, section 11.2.5.5.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiEccCurve(TPM2ECCCurve);
+
+/// TpmiRhNvIndex represents an NV location (TPMI_RH_NV_INDEX).
+/// See definition in Part 2: Structures, section 9.24.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiRhNvIndex(u32);
+impl TryFrom<u32> for TpmiRhNvIndex {
+    type Error = TssTspError;
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        if TpmHc::is_nv_index(value) {
+            Ok(TpmiRhNvIndex(value))
+        } else {
+            Err(TssTspError::new(TssErrorCode::BadParameter))
+        }
+    }
+}
+
+/// The number of bits in an RSA key.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiRsaKeyBits(pub(crate) u16);
+
+/// TpmiShAuthSessions represents handles referring to an authorization session (TPMI_SH_AUTH_SESSION).
+/// See definition in Part 2: Structures, section 9.8.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiShAuthSession(u32);
+impl TryFrom<u32> for TpmiShAuthSession {
+    type Error = TssTspError;
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        if TpmHc::is_hmac_session(value)
+            || TpmHc::is_policy_session(value)
+            || (value == Self::RS_PW.0)
+        {
+            Ok(TpmiShAuthSession(value))
+        } else {
+            Err(TssTspError::new(TssErrorCode::BadParameter))
+        }
+    }
+}
+impl TpmiShAuthSession {
+    /// A password authorization.
+    pub const RS_PW: TpmiShAuthSession = TpmiShAuthSession(TPM2Handle::RSPW.0);
+}
+
+/// The number of bits in an SM4 key.
+#[repr(transparent)]
+#[derive(Clone, Copy, PartialEq, Debug, Default, Marshalable)]
+pub struct TpmiSm4KeyBits(u16);
+
+/// TpmiStAttest represents an attestation structure type (TPMI_ST_ATTEST).
+/// See definition in Part 2: Structures, section 10.12.10.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+pub enum TpmiStAttest {
+    AttestCertify = TPM2ST::AttestCertify.0,
+    AttestQuote = TPM2ST::AttestQuote.0,
+    AttestSessionAudit = TPM2ST::AttestSessionAudit.0,
+    AttestCommandAudit = TPM2ST::AttestCommandAudit.0,
+    AttestTime = TPM2ST::AttestTime.0,
+    AttestCreation = TPM2ST::AttestCreation.0,
+    AttestNV = TPM2ST::AttestNV.0,
+    AttestNVDigest = TPM2ST::AttestNVDigest.0,
+}
+
+/// TpmiStCommandTag defines the command tags (TPMI_ST_COMMAND_TAG).
+/// See definition in Part 2: Structures, section 9.35.
+#[open_enum]
+#[repr(u16)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+pub enum TpmiStCommandTag{
+    NoSessions = TPM2ST::NoSessions.0,
+    Sessions = TPM2ST::Sessions.0,
+}
+
+/// TpmiYesNo is used in place of a boolean.
+/// See TPMI_YES_NO definition in Part 2: Structures, section 9.2.
+#[open_enum]
+#[repr(u8)]
+#[rustfmt::skip] #[derive(Debug)] // Keep debug derivation separate for open_enum override.
+#[derive(Copy, Clone, PartialEq, Default, Marshalable)]
+pub enum TpmiYesNo {
+    NO = 0,
+    YES = 1,
+}
